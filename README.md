@@ -1,1 +1,1 @@
-max verstappen e melhor do que lews hamilton
+max verstappen e melhor do que lewis hamilton
