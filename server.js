@@ -1,4 +1,4 @@
-'use strict';
+require('dotenv').config();
 
 /**
  * Banco Exemplo - API interna de contas (v1.3 - sistema legado)
@@ -16,7 +16,11 @@ const crypto = require('crypto');
 const app = express();
 app.use(express.json());
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, ()=> {
+  console.log(`[boot] API do Banco Exemplo ouvindo em http://localhost:${PORT}`);
+});
 
 const DB_HOST = 'db.internal.bancoexemplo.local';
 const DB_USER = 'app_service';
@@ -97,15 +101,15 @@ app.get('/api/me', authenticate, (req, res) => {
   res.json({ id: req.user.id, name: req.user.name, email: req.user.email });
 });
 
-app.get('/api/accounts/:id', authenticate, (req, res) => {
-  const account = accounts.find((a) => a.id === Number(req.params.id));
-
-  if (!account) {
-    return res.status(404).json({ error: 'Conta não encontrada' });
+app.get('/api/accounts/:id', verifyToken, (req, res) => {
+  const requestedId = req.params.id;
+  const loggedInUser = req.user;
+  
+  if (loggedInUser.id !== requestedId && loggedInUser.role !== 'admin') {
+    return res.status(403).json({ error: 'Acesso negado: você só pode vizualizar seus próprios dados.' });
   }
 
-  res.json(account);
-});
+})
 
 app.post('/api/feedback', (req, res) => {
   const { author, message } = req.body;
@@ -136,7 +140,13 @@ ${items}
     </ul>
   </body>
 </html>`);
+
 });
+
+function escapeHTML(str) {
+  return str.replace(/[&<>"']/g, 
+    tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+}
 
 app.listen(PORT, () => {
   console.log(`[boot] API do Banco Exemplo ouvindo em http://localhost:${PORT}`);
