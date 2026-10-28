@@ -1,4 +1,3 @@
-
 # 🛡️ Lab Prático: Code Review Defensivo & Segurança em APIs
 
 Repositório oficial para a atividade prática da disciplina de **Fundamentos de Segurança da Informação** do curso de Análise e Desenvolvimento de Sistemas (ADS) — **IFCE Campus Boa Viagem**.
